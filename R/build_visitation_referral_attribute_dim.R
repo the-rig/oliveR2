@@ -108,19 +108,22 @@ build_visitation_referral_attribute_dim <- function(bld_sch_name = NA
   message("building visit referral table... ", appendLF = FALSE)
 
 suppressWarnings(
-  tbl_visit_referrals <- tbl(con, "ServiceReferrals") %>%
-  select(id_referral_visit = id
-           ,fosterParents
-           ,caseAidesOrIntern
-           ,relatives
-           ,timeNegotiable
-           ,visitsPerWeek
-           ,hoursPerVisit
-           ,languageRequirementNeed
-           ,serviceType) %>%
-  as_data_frame() %>%
-  filter(isCurrentVersion
-           ,is.na(deletedAt))
+   tbl_visit_referrals <- tbl(con, "ServiceReferrals") %>%
+      select(id_referral_visit = id
+             ,fosterParents
+             ,caseAidesOrIntern
+             ,relatives
+             ,timeNegotiable
+             ,visitsPerWeek
+             ,hoursPerVisit
+             ,languageRequirementNeed
+             ,serviceType
+             ,isCurrentVersion
+             ,deletedAt
+             ) %>%
+      as_data_frame() %>%
+      filter(isCurrentVersion
+             ,is.na(deletedAt))
   )
   message("done")
 
