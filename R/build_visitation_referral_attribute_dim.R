@@ -109,10 +109,7 @@ build_visitation_referral_attribute_dim <- function(bld_sch_name = NA
 
 suppressWarnings(
   tbl_visit_referrals <- tbl(con, "ServiceReferrals") %>%
-    filter(isCurrentVersion
-           ,is.na(deletedAt)) %>%
-    rename(id_referral_visit = id) %>%
-    select(id_referral_visit
+  select(id_referral_visit = id
            ,fosterParents
            ,caseAidesOrIntern
            ,relatives
@@ -121,7 +118,9 @@ suppressWarnings(
            ,hoursPerVisit
            ,languageRequirementNeed
            ,serviceType) %>%
-    as_data_frame()
+  as_data_frame() %>%
+  filter(isCurrentVersion
+           ,is.na(deletedAt))
   )
   message("done")
 
