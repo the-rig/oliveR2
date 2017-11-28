@@ -1,0 +1,37 @@
+Package: oliveR2
+Title: A library to facilitate communication with the Oliver SMS replica database 
+Description: This library is designed to facilitate communication with the Oliver
+    social service data collection tool.  It is a complete re-write of an earlier 
+    package which was primarily geared toward generating BLOBs for use within the 
+    Oliver application per se.  This package is designed to meet the needs of the 
+    Oliver application, but also help analysts with more general Oliver analytic 
+    activities. It also implements packrat. 
+Version: 0.1
+Authors@R: person("Joe", "Mienko", email = "mienko@uw.edu",
+                  role = c("aut", "cre"))
+Depends: R (>= 3.1.0)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends:
+    dplyr,
+    dbplyr,
+    DBI,
+    RPostgreSQL,
+    lubridate,
+    readr
+Imports:
+    httr,
+    tidyjson,
+    stringr,
+    forcats,
+    fuzzyjoin,
+    lazyeval,
+    rmarkdown,
+    flexdashboard,
+    dygraphs,
+    purrr,
+    tibble,
+    rlang,
+    tidyquant
+RoxygenNote: 6.0.1

@@ -1,0 +1,2 @@
+exportPattern("^[[:alpha:]]+")
+importFrom("stats", "filter", "time", "ts", "utils", "data", "find")

@@ -1,0 +1,2035 @@
+---
+title: "Parent-Child Visitation Portable Dashboard"
+output:
+ flexdashboard::flex_dashboard:
+      theme: lumen
+      keep_md: true
+      self_contained: true
+---
+Days to Receipt {data-navmenu="Network-Level Stats"}
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(17," Days")
+                   ,color = "#73A404",caption = "Until Visit is Received (from Creation Date)")
+                   ``` 
+
+### 1-Day Receipt Rate (from Creation Date)
+
+                   ```{r}
+                   gauge(67, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#73A404"))
+                   ``` 
+
+### Receipt Trends
+
+           ```{r}
+           library(dygraphs)
+
+           `from Creation` <- measure_extract_time_series(df_file = "chron_long_created_to_received.rds"
+           ,org_col = NA
+           ,org_id = NA)
+
+           dygraph(`from Creation`, main = "Metric Trends (Days to Receipt from Creation)") %>%
+           dyOptions(colors = c("#73A404"), pointSize = 3, strokeWidth = 3,
+           connectSeparatedPoints = TRUE) %>%
+           dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+           dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+           ``` 
+
+Days to Acceptance {data-navmenu="Network-Level Stats"}
+=====================================
+    Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(6.3," Days")
+                   ,color = "#A43504",caption = "Until Visit is Accepted (from Receipt Date)")
+                   ``` 
+
+### 1-Day Acceptance Rate (from Receipt Date)
+
+                   ```{r}
+                   gauge(28, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#A43504"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(11.9," Days")
+                   ,color = "#A27D11",caption = "Until Visit is Accepted (from Creation Date)")
+                   ``` 
+
+### 1-Day Acceptance Rate (from Creation Date)
+
+                   ```{r}
+                   gauge(12, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#A27D11"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Acceptance Trends
+
+           ```{r}
+           library(dygraphs)
+
+           `from Receipt` <- measure_extract_time_series(df_file = "chron_long_received_to_assigned.rds"
+           ,org_col = NA
+           ,org_id = NA)
+
+           `from Creation` <- measure_extract_time_series(df_file = "chron_long_created_to_assigned.rds"
+           ,org_col = NA
+           ,org_id = NA)
+
+           performance_ts <- cbind(`from Receipt`
+           ,`from Creation`)
+           dygraph(performance_ts, main = "Metric Trends (Days to Acceptance)") %>%
+           dyOptions(colors = c("#A43504", "#A27D11"), pointSize = 3, strokeWidth = 3,
+           connectSeparatedPoints = TRUE) %>%
+           dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+           dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+           ``` 
+
+###
+
+           ```{r}
+           library(dygraphs)
+
+           New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+           dygraph(New, main = "New Referrals (Simulated Data)") %>%
+           dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+           ``` 
+
+Days to Schedule {data-navmenu="Network-Level Stats"}
+=====================================
+    Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(16.9," Days")
+                   ,color = "#0473A4",caption = "Until Visit is Scheduled (from Creation Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Creation Date)
+
+                   ```{r}
+                   gauge(45, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0473A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(11.4," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Receipt Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Receipt Date)
+
+                   ```{r}
+                   gauge(59, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Scheduling Trends
+
+           ```{r}
+           library(dygraphs)
+
+           `from Receipt` <- measure_extract_time_series(df_file = "chron_long_received_to_agreed.rds"
+                            ,org_col = NA
+           ,org_id = NA)
+
+           `from Creation` <- measure_extract_time_series(df_file = "chron_long_created_to_agreed.rds"
+                            ,org_col = NA
+           ,org_id = NA)
+
+           performance_ts <- cbind(`from Receipt`
+           ,`from Creation`)
+           dygraph(performance_ts, main = "Metric Trends (Days to Schedule)") %>%
+           dyOptions(colors = c("#0423A4", "#0473A4"), pointSize = 3, strokeWidth = 3,
+           connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+           ``` 
+
+###
+
+           ```{r}
+           library(dygraphs)
+
+           New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+           dygraph(New, main = "New Referrals (Simulated Data)") %>%
+           dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+           ``` 
+
+Case Composition {data-navmenu="Trends and Demographics"}
+=====================================
+### This section of the portable dashboard is under development. Please see the **Provider-Level Scheduling Stats** for a prototype of this product.
+
+Refferal Trends {data-navmenu="Trends and Demographics"}
+=====================================
+### This section of the portable dashboard is under development. Please see the **Provider-Level Scheduling Stats** for a prototype of this product.
+
+
+ New Beginnings Visitation and Parent Education {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(0," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(100, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(4.4," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(88, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(44.3," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(9, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### New Beginnings Visitation and Parent Education
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =6)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =6)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =6)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ Service Alternatives {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(6.5," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(100, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(7.9," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(67, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(49.1," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(7, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Service Alternatives
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =11)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =11)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =11)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ Unite Family Services {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(3.2," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(100, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(3.8," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(97, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(46," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(13, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Unite Family Services
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =14)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =14)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =14)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ Family Visitation Volunteers of America {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(11.5," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(69, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(6," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(83, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(45.5," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(7, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Family Visitation Volunteers of America
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =8)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =8)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =8)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ Martin Luther King Jr. Family Outreach Center {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                    ```{r}
+                    valueBox(
+                    "Metric Unavailable"
+                    ,color = "#0416A4",caption = "for Days Until Visit is Scheduled (from Acceptance Date)")
+                    ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                    ```{r}
+                    ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(13," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(0, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(26," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(0, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Martin Luther King Jr. Family Outreach Center
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =16)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =16)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =16)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ GMC Training Institute {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(4.5," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(100, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(15.3," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(44, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(55.3," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(0, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### GMC Training Institute
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =10)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =10)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =10)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ G&A, LLC {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(15.4," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(40, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(2," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(100, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(43.5," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(3, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### G&A, LLC
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =13)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =13)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =13)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ Love My Child Family Services {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(4.4," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(100, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(8.1," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(60, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(45.7," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(7, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Love My Child Family Services
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =9)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =9)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =9)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ Angela's Family Services {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(3," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(100, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(6.9," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(90, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(38.6," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(22, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Angela's Family Services
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =22)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =22)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =22)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ The Salvation Army Nurturing Center for Children & Families {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(3.8," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(100, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(3.8," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(98, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(41.4," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(13, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### The Salvation Army Nurturing Center for Children & Families
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =4)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =4)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =4)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ Reunified Services {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(10," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(50, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(7.2," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(58, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(651.2," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(4, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Reunified Services
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =112)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =112)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =112)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ American Indian Community Center {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(12," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(0, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(20," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(0, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(27.5," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(6, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### American Indian Community Center
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =7)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =7)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =7)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ Service Alternatives - Spokane {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(13.3," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(33, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(9.1," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(43, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(46.6," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(10, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Service Alternatives - Spokane
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =161)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =161)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =161)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ Fulcrum Institute, DRC {data-orientation=rows, data-navmenu="Provider-Level Scheduling Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(15.8," Days")
+                   ,color = "#0416A4",caption = "Until Visit is Scheduled (from Acceptance Date)")
+                   ``` 
+
+### 3-Day Scheduling Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(19, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#0416A4"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(8.9," Days")
+                   ,color = "#771086",caption = "for Days Until Visit is Expected to Occur (from Acceptance Date)")
+                   ``` 
+
+### 7-Day Expectation Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(50, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#771086"))
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(233.9," Days")
+                   ,color = "#FC4F1E",caption = "for Days Until Visit is In-Progress (from Acceptance Date)")
+                   ``` 
+
+
+
+### 7-Day In-Progress Rate (from Acceptance Date)
+
+                   ```{r}
+                   gauge(8, min = 0, max = 100, symbol = "%"
+                   ,gaugeSectors(colors = "#FC4F1E"))
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Fulcrum Institute, DRC
+
+               ```{r}
+library(dygraphs)
+
+  Inprogress <- measure_extract_time_series(df_file = "chron_long_assigned_to_inprogress.rds"
+                              ,org_col = "id_provider_dim_pcv"
+               ,org_id =3)
+  Schedule <- measure_extract_time_series(df_file = "chron_long_assigned_to_scheduled.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =3)
+  Expected <- measure_extract_time_series(df_file = "chron_long_assigned_to_agreed.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =3)
+               performance_ts <- cbind(Schedule
+               ,Expected
+               ,Inprogress)
+  dygraph(performance_ts, main = "Metric Trends") %>%
+               dyOptions(colors = c("#0416A4", "#771086", "#FC4F1E"), pointSize = 3, strokeWidth = 3,
+connectSeparatedPoints = TRUE) %>%
+dyEvent("2017-09-20", "Timeline Release", labelLoc = "top") %>%
+dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+###
+
+               ```{r}
+library(dygraphs)
+
+               New <- ts(rnorm(8, 15, 2), start = c(2016, 10), end = c(2017, 10), frequency = 12)
+
+  dygraph(New, main = "New Referrals (Simulated Data)") %>%
+    dyOptions(colors = c("#B58900"), pointSize = 3, strokeWidth = 3)
+               ``` 
+
+ New Beginnings Visitation and Parent Education {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(26,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(0,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### New Beginnings Visitation and Parent Education
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =6)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =6)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ Service Alternatives {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(17,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(12,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Service Alternatives
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =11)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =11)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ Unite Family Services {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(20,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(5,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Unite Family Services
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =14)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =14)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ Family Visitation Volunteers of America {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(16,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(6,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Family Visitation Volunteers of America
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =8)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =8)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ Martin Luther King Jr. Family Outreach Center {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(9,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(100,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Martin Luther King Jr. Family Outreach Center
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =16)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =16)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ GMC Training Institute {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(46,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(0,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### GMC Training Institute
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =10)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =10)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ G&A, LLC {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(27,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(5,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### G&A, LLC
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =13)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =13)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ Love My Child Family Services {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(21,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(1,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Love My Child Family Services
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =9)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =9)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ Angela's Family Services {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(18,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(17,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Angela's Family Services
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =22)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =22)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ The Salvation Army Nurturing Center for Children & Families {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(24,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(2,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### The Salvation Army Nurturing Center for Children & Families
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =4)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =4)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ Reunified Services {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(15,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(14,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Reunified Services
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =112)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =112)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ American Indian Community Center {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(17,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(0,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### American Indian Community Center
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =7)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =7)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ Service Alternatives - Spokane {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(22,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(5,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Service Alternatives - Spokane
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =161)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =161)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
+
+
+ Fulcrum Institute, DRC {data-orientation=rows, data-navmenu="Provider-Level Report Stats"} 
+=====================================
+Row {data-height=600, data-width=300} 
+-------------------------------------
+
+###
+
+                   ```{r}
+                   valueBox(paste(14,"%")
+                   ,color = "#FC4A1A",caption = "24-Hour Cancellation Rate")
+                   ``` 
+
+###
+
+                   ```{r}
+                   valueBox(paste(9,"%")
+                   ,color = "#F7B733",caption = "Among 24-Hour Cancellations, Rate of Provider Cause")
+                   ``` 
+
+Row {data-height=400} 
+-------------------------------------
+
+### Fulcrum Institute, DRC
+
+               ```{r}
+               library(dygraphs)
+               `Provider Cancels` <- measure_extract_time_series(df_file = "prop_long_missed_visit.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =3)*100
+
+               Cancels <- measure_extract_time_series(df_file = "prop_long_missed_visit_by_pvd.rds"
+               ,org_col = "id_provider_dim_pcv"
+               ,org_id =3)*100
+
+           performance_ts <- cbind(Cancels
+               ,`Provider Cancels`)
+
+               dygraph(performance_ts, main = "Metric Trends (24-Hour Cancellation Rates)") %>%
+               dyOptions(colors = c("#FC4A1A", "#F7B733"), pointSize = 3, strokeWidth = 3,
+               connectSeparatedPoints = TRUE) %>%
+               dyLegend(show = "onmouseover", hideOnMouseOut = TRUE, width = 400)
+               ``` 
+
