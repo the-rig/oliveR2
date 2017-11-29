@@ -124,8 +124,6 @@ build_visitation_referral_attribute_dim <- function(bld_sch_name = NA
 
   message("done")
 
-  tbl_visit_referrals
-
   message("building visit visit attribute table... ", appendLF = FALSE)
 
   suppressWarnings(
