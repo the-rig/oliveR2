@@ -9,10 +9,8 @@
 #'
 #' @examples
 build_visitation_referral_fact <- function(bld_sch_name = NA
-                                           ,
-                                           wrt_sch_name = NA
-                                           ,
-                                           establish_con = FALSE) {
+                                           ,wrt_sch_name = NA
+                                           ,establish_con = FALSE) {
 
   message("* begin visitation_referral_fact build procedure *")
 
@@ -26,102 +24,96 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
 
   message("building organization table... ", appendLF = FALSE)
 
-  suppressWarnings(
-    tbl_visit_referral_organizations <- tbl(con, "ServiceReferrals") %>%
-      filter(isCurrentVersion
-             , is.na(deletedAt)) %>%
-      arrange(id, organizationId, desc(updatedAt)) %>%
-      distinct(organizationId, id) %>%
-      select(id_referral_visit = id
-             , id_organization = organizationId) %>%
-      as_data_frame()
-  )
+  # Single query from ServiceReferrals with all the fields used for the tables built off it
+
+  service_referrals <- DBI::dbGetQuery(con, "SELECT id
+                                              , \"referralId\"
+	                                            , \"caseNumber\"
+	                                            , \"organizationId\"
+                                            	, \"requestDate\"
+                                              , \"createdAt\"
+	                                            , \"updatedAt\"
+	                                            , \"isCurrentVersion\"
+                                            FROM staging.\"ServiceReferrals\"
+                                            WHERE \"deletedAt\" IS NULL
+                                              AND \"isCurrentVersion\" = FALSE") %>%
+    as_data_frame()
+
+  message("building organization table... ", appendLF = FALSE)
+
+  tbl_visit_referral_organizations <- arrange(service_referrals
+                                              , id
+                                              , organizationId
+                                              , desc(updatedAt)) %>%
+    distinct(organizationId, id) %>%
+    select(id_referral_visit = id
+           , id_organization = organizationId)
 
   message("done")
 
   message("building case id table... ", appendLF = FALSE)
-  suppressWarnings(
-    tbl_visit_referral_case <- tbl(con, "ServiceReferrals") %>%
-      filter(isCurrentVersion
-             , is.na(deletedAt)) %>%
-      arrange(id, caseNumber, desc(updatedAt)) %>%
-      distinct(caseNumber, id) %>%
-      select(id_referral_visit = id
-             , id_case = caseNumber) %>%
-      as_data_frame()
-  )
+
+  tbl_visit_referral_case <- arrange(service_referrals
+                                     , id
+                                     , caseNumber
+                                     , desc(updatedAt)
+                                     ) %>%
+    distinct(caseNumber, id) %>%
+    select(id_referral_visit = id
+           , id_case = caseNumber)
+
   message("done")
 
   message("building referral creation table... ", appendLF = FALSE)
-  suppressWarnings(
-    tbl_visit_referral_created <- tbl(con, "ServiceReferrals") %>%
-      filter(isCurrentVersion
-             , is.na(deletedAt)) %>%
-      select(requestDate
-             , id
-             , referralId
-             , createdAt) %>%
-      mutate(
-        id_referral_visit = id
-        ,
-        dt_referral_created = ifelse(referralId == '(copy)'
-                                     , createdAt
-                                     , requestDate)
-        ,
-        dt_referral_created = ifelse(is.na(dt_referral_created)
-                                     , createdAt
-                                     , dt_referral_created)
-      ) %>%
-      as_data_frame() %>%
-      mutate(dt_referral_created = ymd(paste0(
-        year(dt_referral_created),
-        "-",
-        month(dt_referral_created),
-        "-",
-        day(dt_referral_created)
-      ))) %>%
-      select(id_referral_visit
-             , dt_referral_created) %>%
-      as_data_frame()
-  )
-  message("done")
 
+  tbl_visit_referral_created <- select(service_referrals
+                                       , requestDate
+                                       , id
+                                       , referralId
+                                       , createdAt
+                                       ) %>%
+    mutate(id_referral_visit = id
+           , dt_referral_created = if_else(referralId == '(copy)'
+                                           , createdAt
+                                           , as.POSIXct(requestDate))
+           , dt_referral_created = if_else(is.na(dt_referral_created)
+                                           , createdAt
+                                           , dt_referral_created)
+           ) %>%
+      select(id_referral_visit
+             , dt_referral_created)
+
+  message("done")
 
   # this is essentially the old version of the received date
   # it does restrict on the basis of the psql function date_trunc
   # and does not require the existence of a referral id
 
   message("building receipt tables... ", appendLF = FALSE)
-  suppressWarnings(
-    tbl_visit_referrals_received_v1 <- tbl(con, "ServiceReferrals") %>%
-      filter(is.na(deletedAt)) %>%
-      group_by(id) %>%
-      summarise(dt_referral_received = min(updatedAt)) %>%
-      as_data_frame() %>%
-      mutate(dt_referral_received_v1 = ymd(paste0(
-        year(dt_referral_received),
-        "-",
-        month(dt_referral_received),
-        "-",
-        day(dt_referral_received)
-      ))) %>%
-      select(id_referral_visit = id
-             , dt_referral_received_v1)
-  )
-  suppressWarnings(
-    tbl_visit_referrals_received_v2 <-
-      tbl(con, "ServiceReferralTimelineStages") %>%
-      filter(StageTypeId == 7) %>%
-      arrange(ServiceReferralId, StageTypeId, desc(updatedAt)) %>%
-      distinct(date, ServiceReferralId) %>%
-      as_data_frame() %>%
-      mutate(
-        dt_referral_received_v2 = ymd(date)
-        ,
-        id_referral_visit = ServiceReferralId
-      ) %>%
-      select(dt_referral_received_v2, id_referral_visit)
-  )
+
+  tbl_visit_referrals_received_v1 <- DBI::dbGetQuery(con, "SELECT id AS id_referral_visit
+	                                                           , min(\"updatedAt\") AS dt_referral_received_v1
+                                                           FROM staging.\"ServiceReferrals\"
+                                                           WHERE \"deletedAt\" IS NULL
+                                                           GROUP BY id")
+
+
+  tbl_visit_referrals_received_v2 <- DBI::dbGetQuery(con, "
+          WITH tbl_visit_referrals_received_v2 AS
+
+          (
+          SELECT \"ServiceReferralId\"
+	          , date
+	          , rank() OVER (PARTITION BY \"ServiceReferralId\", date ORDER BY \"updatedAt\" DESC) AS rnk
+          FROM staging.\"ServiceReferralTimelineStages\"
+          WHERE \"StageTypeId\" = 7
+          )
+
+          SELECT \"ServiceReferralId\" AS id_referral_visit
+	          , date AS dt_referral_received_v2
+          FROM tbl_visit_referrals_received_v2
+          WHERE rnk = 1")
+
   suppressMessages(
     tbl_visit_referral_received <-
       full_join(
