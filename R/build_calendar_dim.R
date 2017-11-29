@@ -129,6 +129,16 @@ build_calendar_dim <- function(from_date = '01-01-2011'
                                     ,overwrite = TRUE
                                     ,row.names = FALSE)
 
+    message("done")
+
+    message("altering table ownership to report_developer... ", appendLF = FALSE)
+
+    DBI::dbGetQuery(con, "ALTER TABLE independent.calendar_dim
+    OWNER TO report_developer;")
+
+    message("done")
+
+
     # col_desc <- c(
     #   id_calendar_dim = "PK - an 8-digit integer representation of the date formatted as YYYYMMDD"
     #   ,calendar_date = "A date representation of the primary key"
