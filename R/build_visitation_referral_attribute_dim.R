@@ -283,6 +283,15 @@ build_visitation_referral_attribute_dim <- function(bld_sch_name = NA
                                   ,overwrite = TRUE
                                   ,row.names = FALSE)
 
+  message("done")
+
+  message("altering table ownership to report_developer... ", appendLF = FALSE)
+
+  DBI::dbGetQuery(con, "ALTER TABLE independent.visitation_referral_attribute_dim
+  OWNER TO report_developer;")
+
+  message("done")
+
   # TODO: document the table as was done for calendar_dim
   # col_desc <- c(
   #   id_visitation_referral_fact = "PK"

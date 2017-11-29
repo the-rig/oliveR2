@@ -22,8 +22,6 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
     message("done")
   }
 
-  message("building organization table... ", appendLF = FALSE)
-
   # Single query from ServiceReferrals with all the fields used for the tables built off it
 
   service_referrals <- DBI::dbGetQuery(con, "SELECT id
@@ -462,6 +460,14 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
     row.names = FALSE
   )
 
+  message("done")
+
+  message("altering table ownership to report_developer... ", appendLF = FALSE)
+
+  DBI::dbGetQuery(con, "ALTER TABLE independent.visitation_referral_fact
+  OWNER TO report_developer;")
+
+  message("done")
 
   # TODO: document the table as was done for calendar_dim
 
