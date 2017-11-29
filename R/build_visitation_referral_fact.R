@@ -104,9 +104,10 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
           (
           SELECT \"ServiceReferralId\"
 	          , date
-	          , rank() OVER (PARTITION BY \"ServiceReferralId\", date ORDER BY \"updatedAt\" DESC) AS rnk
-          FROM staging.\"ServiceReferralTimelineStages\"
-          WHERE \"StageTypeId\" = 7
+	          , rank() OVER (PARTITION BY \"ServiceReferralId\", date ORDER BY srtls.\"updatedAt\" DESC) AS rnk
+          FROM staging.\"ServiceReferralTimelineStages\" AS srtls
+          LEFT JOIN staging.\"StageTypes\" AS st ON srtls.\"StageTypeId\" = st.id
+          WHERE name = 'Received'
           )
 
           SELECT \"ServiceReferralId\" AS id_referral_visit
@@ -125,6 +126,7 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
   message("done")
 
   message("building assignment tables... ", appendLF = FALSE)
+
   suppressWarnings(
     tbl_visit_referrals_assigned_v1 <- DBI::dbGetQuery(
       con
@@ -145,20 +147,24 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
       )
       )
 
-  suppressWarnings(
-    tbl_visit_referrals_assigned_v2 <-
-      tbl(con, "ServiceReferralTimelineStages") %>%
-      filter(StageTypeId == 8) %>%
-      arrange(ServiceReferralId, StageTypeId, desc(updatedAt)) %>%
-      distinct(date, ServiceReferralId) %>%
-      as_data_frame() %>%
-      mutate(
-        dt_referral_assigned_v2 = ymd(date)
-        ,
-        id_referral_visit = ServiceReferralId
-      ) %>%
-      select(dt_referral_assigned_v2, id_referral_visit)
-  )
+  tbl_visit_referrals_assigned_v2 <- DBI::dbGetQuery(
+    con
+    ,"WITH tbl_visit_referrals_assigned_v2 AS
+
+          (
+          SELECT \"ServiceReferralId\"
+	          , date
+	          , rank() OVER (PARTITION BY \"ServiceReferralId\", date ORDER BY srtls.\"updatedAt\" DESC) AS rnk
+          FROM staging.\"ServiceReferralTimelineStages\" AS srtls
+          LEFT JOIN staging.\"StageTypes\" AS st ON srtls.\"StageTypeId\" = st.id
+          WHERE name = 'Assigned'
+          )
+
+          SELECT DISTINCT \"ServiceReferralId\" AS id_referral_visit
+	          , date AS dt_referral_assigned_v2
+          FROM tbl_visit_referrals_assigned_v2
+          WHERE rnk = 1")
+
   suppressMessages(
     tbl_visit_referral_assigned <-
       full_join(
@@ -186,19 +192,23 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
       GROUP BY \"ServiceReferrals\".id) armv ON sr_1.id = armv.id_referral_visit AND sr_1.\"versionId\" = armv.id_version_min"
       )
       )
-  suppressWarnings(
-    tbl_visit_referrals_agreed_v2 <-
-      tbl(con, "ServiceReferralTimelineStages") %>%
-      filter(StageTypeId == 10) %>%
-      arrange(ServiceReferralId, StageTypeId, desc(updatedAt)) %>%
-      distinct(date, ServiceReferralId) %>%
-      as_data_frame() %>%
-      mutate(
-        dt_referral_agreed_v2 = ymd(date)
-        ,
-        id_referral_visit = ServiceReferralId
-      ) %>%
-      select(dt_referral_agreed_v2, id_referral_visit)
+  tbl_visit_referrals_agreed_v2 <- DBI::dbGetQuery(
+    con
+    ,"WITH tbl_visit_referrals_agreed_v2 AS
+
+        (
+        SELECT \"ServiceReferralId\"
+	        , date
+	        , rank() OVER (PARTITION BY \"ServiceReferralId\", date ORDER BY srtls.\"updatedAt\" DESC) AS rnk
+        FROM staging.\"ServiceReferralTimelineStages\" AS srtls
+        LEFT JOIN staging.\"StageTypes\" AS st ON srtls.\"StageTypeId\" = st.id
+        WHERE name = 'Agreed'
+        )
+
+        SELECT \"ServiceReferralId\" AS id_referral_visit
+	        , date AS dt_referral_agreed_v2
+        FROM tbl_visit_referrals_agreed_v2
+        WHERE rnk = 1"
   )
   suppressMessages(
     tbl_visit_referral_agreed <-
@@ -226,20 +236,24 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
       GROUP BY x.internalsrid"
       )
       )
-  suppressWarnings(
-    tbl_visit_referrals_scheduled_v2 <-
-      tbl(con, "ServiceReferralTimelineStages") %>%
-      filter(StageTypeId == 10) %>%
-      arrange(ServiceReferralId, StageTypeId, desc(updatedAt)) %>%
-      distinct(date, ServiceReferralId) %>%
-      as_data_frame() %>%
-      mutate(
-        dt_referral_scheduled_v2 = ymd(date)
-        ,
-        id_referral_visit = ServiceReferralId
-      ) %>%
-      select(dt_referral_scheduled_v2, id_referral_visit)
-  )
+    tbl_visit_referrals_scheduled_v2 <- DBI::dbGetQuery(
+        con
+        ,"WITH tbl_visit_referrals_scheduled_v2 AS
+
+        (
+        SELECT \"ServiceReferralId\"
+	        , date
+	        , rank() OVER (PARTITION BY \"ServiceReferralId\", date ORDER BY srtls.\"updatedAt\" DESC) AS rnk
+        FROM staging.\"ServiceReferralTimelineStages\" AS srtls
+        LEFT JOIN staging.\"StageTypes\" AS st ON srtls.\"StageTypeId\" = st.id
+        WHERE name = 'Scheduled'
+        )
+
+        SELECT \"ServiceReferralId\" AS id_referral_visit
+	        , date AS dt_referral_scheduled_v2
+        FROM tbl_visit_referrals_scheduled_v2
+        WHERE rnk = 1"
+      )
   suppressMessages(
     tbl_visit_referral_scheduled <-
       full_join(
@@ -267,18 +281,12 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
 
   message("building in-progress tables... ", appendLF = FALSE)
 
-  suppressWarnings(
-    tbl_visit_referral_inprogress <- tbl(con, "VisitReports") %>%
-      filter(isCurrentVersion
-             , is.na(deletedAt)
-             , !is.na(approvedAt)) %>%
-      select(
-        id_referral_visit = serviceReferralId
-        ,
-        dt_referral_inprogress = date
-      ) %>%
-      as_data_frame()
-  )
+  tbl_visit_referral_inprogress <- DBI::dbGetQuery(con, "SELECT \"serviceReferralId\" AS id_referral_visit
+                                                          ,date AS dt_referral_inprogress
+                                                         FROM staging.\"VisitReports\"
+                                                         WHERE \"isCurrentVersion\" = TRUE
+	                                                       AND \"deletedAt\" IS NULL
+	                                                       AND \"approvedAt\" IS NOT NULL")
 
   message("done")
 
