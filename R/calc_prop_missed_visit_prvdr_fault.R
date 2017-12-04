@@ -50,7 +50,7 @@ calc_prop_missed_visit_prvdr_fault <- function(contract_network = 2
     DBI::dbSendQuery(con, dbplyr::build_sql("SET search_path TO ", 'staging'))
 
     tbl_network_contracts <- tbl(con, "OrganizationContracts") %>%
-      filter(contractOwnerId == contract_network
+      dplyr::filter(contractOwnerId == contract_network
              ,is.na(deletedAt)) %>%
       arrange(desc(updatedAt)) %>%
       distinct(contractOwnerId
@@ -68,7 +68,7 @@ calc_prop_missed_visit_prvdr_fault <- function(contract_network = 2
   dat <- tbl(con, "visitation_fact") %>%
     as_data_frame() %>%
     mutate(dt_calendar_dim_visit_start = ymd(id_calendar_dim_visit_start)) %>%
-    filter(ifelse(is.na(fl_cancelled_not_same_day) | fl_cancelled_not_same_day == FALSE
+    dplyr::filter(ifelse(is.na(fl_cancelled_not_same_day) | fl_cancelled_not_same_day == FALSE
                   ,TRUE, FALSE)) %>%
     select(id_visitation_fact
            ,id_provider_dim_pcv
@@ -84,7 +84,7 @@ calc_prop_missed_visit_prvdr_fault <- function(contract_network = 2
     message("restrict to network contracts... ", appendLF = FALSE)
 
     dat_hack <- dat %>%
-      filter(id_provider_dim_pcv %in% tbl_network_contracts$id_organization) %>%
+      dplyr::filter(id_provider_dim_pcv %in% tbl_network_contracts$id_organization) %>%
       rename(date_marker = dt_calendar_dim_visit_start
              ,measure_value = fl_cancelled_same_day_by_provider) %>%
       mutate(measure_value = ifelse(measure_value, 1, measure_value)
@@ -105,7 +105,7 @@ calc_prop_missed_visit_prvdr_fault <- function(contract_network = 2
     message("applying observation window filter... ", appendLF = FALSE)
 
     dat <- dat %>%
-      filter(dt_calendar_dim_visit_start >= obs_window_start)
+      dplyr::filter(dt_calendar_dim_visit_start >= obs_window_start)
 
     message("done")
   }
@@ -114,7 +114,7 @@ calc_prop_missed_visit_prvdr_fault <- function(contract_network = 2
     message("apply observation window filter... ", appendLF = FALSE)
 
     dat <- dat %>%
-      filter(dt_calendar_dim_visit_start <= obs_window_stop)
+      dplyr::filter(dt_calendar_dim_visit_start <= obs_window_stop)
 
     message("done")
   }
