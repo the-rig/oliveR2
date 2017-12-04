@@ -60,7 +60,7 @@ calc_date_diff_metric <- function(start = "assigned"
     DBI::dbSendQuery(con, dbplyr::build_sql("SET search_path TO ", 'staging'))
 
     tbl_network_contracts <- tbl(con, "OrganizationContracts") %>%
-      filter(contractOwnerId == contract_network
+      dplyr::filter(contractOwnerId == contract_network
              ,is.na(deletedAt)) %>%
       arrange(desc(updatedAt)) %>%
       distinct(contractOwnerId
@@ -76,7 +76,7 @@ calc_date_diff_metric <- function(start = "assigned"
   message("set state version limit... ", appendLF = FALSE)
 
   v1_limit <- tbl(con, "calendar_dim") %>%
-    filter(fl_pre_timeline) %>%
+    dplyr::filter(fl_pre_timeline) %>%
     summarise(limit = max(id_calendar_dim)) %>%
     pull(limit)
 
@@ -209,7 +209,7 @@ calc_date_diff_metric <- function(start = "assigned"
     message("calculate weekend or holiday overlaps... ", appendLF = FALSE)
     weekend_or_holiday <- calendar_dim %>%
       mutate(weekend_or_holiday = coalesce(calendar_date_weekend, calendar_date_holiday)) %>%
-      filter(calendar_date <= now()
+      dplyr::filter(calendar_date <= now()
              ,!is.na(weekend_or_holiday)) %>%
       select(id_calendar_dim, calendar_date)
 
@@ -219,7 +219,7 @@ calc_date_diff_metric <- function(start = "assigned"
                                                                   ,"stop_combo" = "id_calendar_dim")
                                                           ,match_fun = list(`<=`, `>=`)
     ) %>% select(id_visitation_referral_fact, start_combo, stop_combo, id_calendar_dim) %>%
-      filter(!is.na(id_calendar_dim)) %>%
+      dplyr::filter(!is.na(id_calendar_dim)) %>%
       group_by(id_visitation_referral_fact) %>%
       summarise(weekend_holiday_overlap = n()) %>%
       mutate(weekend_holiday_overlap = ifelse(is.na(weekend_holiday_overlap)
@@ -242,7 +242,7 @@ calc_date_diff_metric <- function(start = "assigned"
     message("restrict to network contracts... ", appendLF = FALSE)
 
     dat_start_stop <- dat_start_stop %>%
-      filter(id_provider_dim_pcv %in% tbl_network_contracts$id_organization)
+      dplyr::filter(id_provider_dim_pcv %in% tbl_network_contracts$id_organization)
 
     message("done")
   }
@@ -259,7 +259,7 @@ calc_date_diff_metric <- function(start = "assigned"
     message("applying observation window filter... ", appendLF = FALSE)
 
     dat_start_stop <- dat_start_stop %>%
-      filter(ymd(date_marker) >= obs_window_start)
+      dplyr::filter(ymd(date_marker) >= obs_window_start)
 
     message("done")
   }
@@ -268,7 +268,7 @@ calc_date_diff_metric <- function(start = "assigned"
     message("apply observation window filter... ", appendLF = FALSE)
 
     dat_start_stop <- dat_start_stop %>%
-      filter(ymd(date_marker) <= obs_window_stop)
+      dplyr::filter(ymd(date_marker) <= obs_window_stop)
 
     message("done")
   }
