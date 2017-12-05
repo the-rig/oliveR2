@@ -6,7 +6,7 @@
 #' @examples
 calc_na_contracts <- function() {
   network_contractors <- inner_join(tbl(con, "OrganizationContracts") %>%
-                                      filter(contractOwnerId == 2
+                                      dplyr::filter(contractOwnerId == 2
                                              ,is.na(deletedAt)) %>%
                                       arrange(desc(updatedAt)) %>%
                                       distinct(contractOwnerId
