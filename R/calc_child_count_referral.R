@@ -50,7 +50,7 @@ calc_child_count_referral <- function(contract_network = 2
     DBI::dbSendQuery(con, dbplyr::build_sql("SET search_path TO ", 'staging'))
 
     tbl_network_contracts <- tbl(con, "OrganizationContracts") %>%
-      filter(contractOwnerId == contract_network
+      dplyr::filter(contractOwnerId == contract_network
              ,is.na(deletedAt)) %>%
       arrange(desc(updatedAt)) %>%
       distinct(contractOwnerId
@@ -80,7 +80,7 @@ calc_child_count_referral <- function(contract_network = 2
     message("restrict to network contracts... ", appendLF = FALSE)
 
     dat <- dat %>%
-      filter(id_provider_dim_pcv %in% tbl_network_contracts$id_organization) %>%
+      dplyr::filter(id_provider_dim_pcv %in% tbl_network_contracts$id_organization) %>%
       rename(date_marker = dt_calendar_dim_created
              ,measure_value = qt_child_count)
     message("done")
@@ -98,7 +98,7 @@ calc_child_count_referral <- function(contract_network = 2
     message("applying observation window filter... ", appendLF = FALSE)
 
     dat <- dat %>%
-      filter(date_marker >= obs_window_start)
+      dplyr::filter(date_marker >= obs_window_start)
 
     message("done")
   }
@@ -107,7 +107,7 @@ calc_child_count_referral <- function(contract_network = 2
     message("apply observation window filter... ", appendLF = FALSE)
 
     dat <- dat %>%
-      filter(date_marker <= obs_window_stop)
+      dplyr::filter(date_marker <= obs_window_stop)
 
     message("done")
   }
