@@ -17,6 +17,7 @@ ppm_helper_single <- function(org_id
                                ,df_file = "chron_assigned_to_scheduled.rds"
                                ,org_col = "id_provider_dim_pcv"
                                ,label = NA
+                               ,units = NA
                                ,primary_only = FALSE
                                ,sub_label_pre = ''
                                ,sub_label_post = ''

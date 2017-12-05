@@ -14,19 +14,19 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends:
-    dplyr,
     dbplyr,
     DBI,
     RPostgreSQL,
     lubridate,
-    readr
+    readr,
+    lazyeval,
+    dplyr
 Imports:
     httr,
     tidyjson,
     stringr,
     forcats,
     fuzzyjoin,
-    lazyeval,
     rmarkdown,
     flexdashboard,
     dygraphs,
