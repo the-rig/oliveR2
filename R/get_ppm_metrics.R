@@ -38,5 +38,7 @@ x$attendance_per_scheduled_visit = ppm_helper_single(org_id = org_id
                                         ,primary_only = TRUE
                                         ,sub_label_pre = "Among 24-Hour Cancellations")
 
+
 x
+
 }
