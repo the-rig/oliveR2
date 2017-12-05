@@ -60,7 +60,8 @@ calc_multiple <- function(obs_window_start = ymd(20170301)
                                                      ,stop = "inprogress"
                                                      ,target = 7),
   "calc_prop_missed_visit",                        list(),
-  "calc_prop_missed_visit_prvdr_fault",            list()
+  "calc_prop_missed_visit_prvdr_fault",            list(),
+  "calc_child_count_referral",                     list()
   )
 
   out <- purrr::invoke_map(calc_function_list$f
