@@ -35,42 +35,42 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
                                             FROM staging.\"ServiceReferrals\"
                                             WHERE \"deletedAt\" IS NULL
                                               AND \"isCurrentVersion\" = FALSE") %>%
-    as_data_frame()
+    dplyr::as_data_frame()
 
   message("building organization table... ", appendLF = FALSE)
 
-  tbl_visit_referral_organizations <- arrange(service_referrals
+  tbl_visit_referral_organizations <- dplyr::arrange(service_referrals
                                               , id
                                               , organizationId
                                               , desc(updatedAt)) %>%
-    distinct(organizationId, id) %>%
-    select(id_referral_visit = id
+    dplyr::distinct(organizationId, id) %>%
+    dplyr::select(id_referral_visit = id
            , id_organization = organizationId)
 
   message("done")
 
   message("building case id table... ", appendLF = FALSE)
 
-  tbl_visit_referral_case <- arrange(service_referrals
+  tbl_visit_referral_case <- dplyr::arrange(service_referrals
                                      , id
                                      , caseNumber
                                      , desc(updatedAt)
                                      ) %>%
-    distinct(caseNumber, id) %>%
-    select(id_referral_visit = id
+    dplyr::distinct(caseNumber, id) %>%
+    dplyr::select(id_referral_visit = id
            , id_case = caseNumber)
 
   message("done")
 
   message("building referral creation table... ", appendLF = FALSE)
 
-  tbl_visit_referral_created <- select(service_referrals
+  tbl_visit_referral_created <- dplyr::select(service_referrals
                                        , requestDate
                                        , id
                                        , referralId
                                        , createdAt
                                        ) %>%
-    mutate(id_referral_visit = id
+    dplyr::mutate(id_referral_visit = id
            , dt_referral_created = if_else(referralId == '(copy)'
                                            , createdAt
                                            , as.POSIXct(requestDate))
@@ -78,7 +78,7 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
                                            , createdAt
                                            , dt_referral_created)
            ) %>%
-      select(id_referral_visit
+    dplyr::select(id_referral_visit
              , dt_referral_created)
 
   message("done")
@@ -115,7 +115,7 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
 
   suppressMessages(
     tbl_visit_referral_received <-
-      full_join(
+      dplyr::full_join(
         tbl_visit_referrals_received_v1
         ,
         tbl_visit_referrals_received_v2
@@ -165,7 +165,7 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
 
   suppressMessages(
     tbl_visit_referral_assigned <-
-      full_join(
+      dplyr::full_join(
         tbl_visit_referrals_assigned_v1
         ,
         tbl_visit_referrals_assigned_v2
@@ -210,7 +210,7 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
   )
   suppressMessages(
     tbl_visit_referral_agreed <-
-      full_join(
+      dplyr::full_join(
         tbl_visit_referrals_agreed_v1
         ,
         tbl_visit_referrals_agreed_v2
@@ -254,7 +254,7 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
       )
   suppressMessages(
     tbl_visit_referral_scheduled <-
-      full_join(
+      dplyr::full_join(
         tbl_visit_referrals_scheduled_v1
         ,
         tbl_visit_referrals_scheduled_v2
@@ -297,16 +297,16 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
                                            json_array_elements(\"ServiceReferrals\".\"childDetails\") ->> 'childFamlinkPersonID'::text AS child_id
                                            FROM staging.\"ServiceReferrals\"
                                            WHERE \"ServiceReferrals\".\"isCurrentVersion\" = true AND \"ServiceReferrals\".\"deletedAt\" IS NULL") %>%
-    mutate(id_referral_visit = id
+    dplyr::mutate(id_referral_visit = id
            ,id_prsn_child = ifelse(is.na(child_id), 0
                                    ,as.integer(child_id))
     ) %>%
-    select(id_referral_visit, id_prsn_child) %>%
-    as_data_frame()
+    dplyr::select(id_referral_visit, id_prsn_child) %>%
+    dplyr::as_data_frame()
   )
 
   tbl_referral_children <- group_by(tbl_referral_children, id_referral_visit) %>%
-    summarise(qt_child_count = n())
+    dplyr::summarise(qt_child_count = n())
 
   message("done")
 
@@ -326,8 +326,8 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
       tbl_referral_children
     ) %>%
       Reduce(function(dtf1, dtf2)
-        left_join(dtf1, dtf2, by = "id_referral_visit"), .) %>%
-      mutate(
+        dplyr::left_join(dtf1, dtf2, by = "id_referral_visit"), .) %>%
+      dplyr::mutate(
         id_visitation_referral_fact = id_referral_visit,
         id_calendar_dim_opd = as.integer(format(mdy(dt_opd), "%Y%m%d")),
         id_provider_dim_pcv = id_organization,
@@ -343,8 +343,8 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
         id_calendar_dim_scheduled_v2 = as.integer(format(dt_referral_scheduled_v2, "%Y%m%d")),
         id_calendar_dim_inprogress = as.integer(format(dt_referral_inprogress, "%Y%m%d"))
       ) %>%
-      group_by(id_visitation_referral_fact, id_provider_dim_pcv) %>%
-      summarise(
+      dplyr::group_by(id_visitation_referral_fact, id_provider_dim_pcv) %>%
+      dplyr::summarise(
         id_calendar_dim_opd = ifelse(is.infinite(max(
           id_calendar_dim_opd, na.rm = TRUE))
           ,NA
@@ -412,7 +412,7 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
         ,id_case = max(id_case)
         ,qt_child_count = max(qt_child_count)
       ) %>%
-      select(
+      dplyr::select(
         id_visitation_referral_fact,
         id_case,
         id_provider_dim_pcv,
@@ -429,9 +429,9 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
         id_calendar_dim_inprogress,
         qt_child_count
       ) %>%
-      inner_join(visitation_referral_attribute_fact_and_dim
+      dplyr::inner_join(visitation_referral_attribute_fact_and_dim
                  , by = "id_visitation_referral_fact") %>%
-      distinct()
+      dplyr::distinct()
   )
   message("done")
 
@@ -446,7 +446,7 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
   message("send visitation_referral_fact to db... ", appendLF = FALSE)
 
   visitation_referral_fact <- visitation_referral_fact %>%
-    mutate(id_calendar_dim_table_update = as.integer(format(now(), "%Y%m%d")))
+    dplyr::mutate(id_calendar_dim_table_update = as.integer(format(now(), "%Y%m%d")))
 
   job_status <- DBI::dbWriteTable(
     conn = con
