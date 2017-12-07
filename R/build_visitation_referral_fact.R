@@ -34,7 +34,7 @@ build_visitation_referral_fact <- function(bld_sch_name = NA
 	                                            , \"isCurrentVersion\"
                                             FROM staging.\"ServiceReferrals\"
                                             WHERE \"deletedAt\" IS NULL
-                                              AND \"isCurrentVersion\" = FALSE") %>%
+                                              AND \"isCurrentVersion\" = TRUE") %>%
     dplyr::as_data_frame()
 
   message("building organization table... ", appendLF = FALSE)
