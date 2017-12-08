@@ -1,14 +1,12 @@
 #' Title
 #'
-#' @param obs_window_start
-#' @param obs_window_stop
 #'
 #' @return
 #' @export
 #'
 #' @examples
 
-calc_date_diff_metric <- function(data
+calc_pm <- function(data
                     , metric
                     , target
                     , start
