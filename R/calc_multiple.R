@@ -18,9 +18,7 @@ calc_multiple <- function(bld_sch_name = "independent"){
 
   message("Querying data... ", appendLF = FALSE)
 
-  DBI::dbSendQuery(con, dbplyr::build_sql("SET search_path TO ", bld_sch_name))
-
-  dat <- DBI::dbGetQuery(con, "SELECT org_id
+  dat <- DBI::dbGetQuery(con, "SELECT org_id AS id_provider_dim_pcv
                          , ref_id
                          , assigned_date
                          , agreed_date
@@ -29,7 +27,7 @@ calc_multiple <- function(bld_sch_name = "independent"){
                          , work_days_elapsed(assigned_date, scheduled_date) AS pm2
                          , CASE WHEN independent.work_days_elapsed(assigned_date, agreed_date) <= 3 THEN 1 ELSE 0 END AS pm1_goal
                          , CASE WHEN independent.work_days_elapsed(assigned_date, scheduled_date) <= 7 THEN 1 ELSE 0 END AS pm2_goal
-                         FROM independent.assigned_agreed_scheduled;")
+                         FROM assigned_agreed_scheduled;")
 
   message("done")
 
@@ -61,7 +59,7 @@ calc_multiple <- function(bld_sch_name = "independent"){
 
   # Removing data object from memory
 
-  rm(dat)
+  # rm(dat)
 
 }
 

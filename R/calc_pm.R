@@ -15,6 +15,7 @@ calc_pm <- function(data
                                                         ,ymd(20170920), rollback(today()) - days(180))
                                                  ,origin = "1970-01-01")
                     , obs_window_stop = today()
+                    , bld_sch_name = "independent"
 ){
 
   message("set connection to build schema... ", appendLF = FALSE)
@@ -32,8 +33,8 @@ calc_pm <- function(data
   pm_dat <- dat[!is.na(dat[names(dat) == stop_date]),]
 
   pm_dat <- pm_dat %>%
-    select(org_id, contains(metric)) %>%
-    group_by(org_id) %>%
+    select(id_provider_dim_pcv, contains(metric)) %>%
+    group_by(id_provider_dim_pcv) %>%
     summarise_all(mean)
 
   names(pm_dat) <- str_replace(names(pm_dat), paste0(metric, '_goal'), 'fl_met_goal')
