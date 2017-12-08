@@ -10,6 +10,12 @@
 
 calc_multiple <- function(bld_sch_name = "independent"){
 
+  message("set connection to build schema... ", appendLF = FALSE)
+
+  suppressMessages(establish_con_olvr_rplc(set_schema = bld_sch_name))
+
+  message("done")
+
   message("Querying data... ", appendLF = FALSE)
 
   DBI::dbSendQuery(con, dbplyr::build_sql("SET search_path TO ", bld_sch_name))
