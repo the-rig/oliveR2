@@ -30,9 +30,9 @@ calc_pm <- function(data
 
   stop_date <- names(dat)[str_detect(names(dat), stop)]
 
-  pm_dat <- dat[!is.na(dat[names(dat) == stop_date]),]
+  # pm_dat <- dat[!is.na(dat[names(dat) == stop_date]),]
 
-  pm_dat <- pm_dat %>%
+  pm_dat <- dat %>%
     select(id_provider_dim_pcv, contains(metric)) %>%
     group_by(id_provider_dim_pcv) %>%
     summarise_all(mean)

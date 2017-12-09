@@ -28,8 +28,8 @@ calc_multiple <- function(bld_sch_name = "independent"){
                          , CASE WHEN independent.work_days_elapsed(assigned_date, agreed_date) <= 3 THEN 1 ELSE 0 END AS pm1_goal
                          , CASE WHEN independent.work_days_elapsed(assigned_date, scheduled_date) <= 7 THEN 1 ELSE 0 END AS pm2_goal
                          FROM assigned_agreed_scheduled
-                         WHERE agreed IS NOT NULL
-                          AND scheduled IS NOT NULL
+                         WHERE agreed_date IS NOT NULL
+                          AND scheduled_date IS NOT NULL
                          ;")
 
   message("done")
