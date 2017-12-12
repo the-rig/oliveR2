@@ -7,7 +7,7 @@
 #'
 #' @examples
 
-get_ppm_metrics <- function(org_id) {
+get_ppm_metrics( <- function(org_id) {
 
   file_path <- paste0(system.file('extdata', package = 'oliveR2'),'/')
 
@@ -16,6 +16,10 @@ get_ppm_metrics <- function(org_id) {
   dat <- dat[dat$org_id == org_id,]
 
   x <- data_frame(id = org_id)
+
+  if(NROW(dat) == 0){
+    return(NA)
+  } else {
 
   x$acceptance_to_schedule <- tibble(threshold = NA
                                      , value = dat$avg_days_to_scheduled
@@ -32,7 +36,7 @@ get_ppm_metrics <- function(org_id) {
                                                            , NA))
 
   x$child_count_value = tibble(threshold = NA
-                               , value = dat$avg_num_childrenNA
+                               , value = dat$avg_num_children
                                , label = "Children per Referral"
                                , sublabel = NA)
 
@@ -41,6 +45,7 @@ get_ppm_metrics <- function(org_id) {
                                             , label = "Rate of Provider Cancellations"
                                             , sublabel = "Among 24-Hour Cancellations")
 
+  }
   x
 
   }
