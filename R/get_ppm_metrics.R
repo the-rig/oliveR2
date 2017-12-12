@@ -7,7 +7,7 @@
 #'
 #' @examples
 
-get_ppm_metrics( <- function(org_id) {
+get_ppm_metrics <- function(org_id) {
 
   file_path <- paste0(system.file('extdata', package = 'oliveR2'),'/')
 
